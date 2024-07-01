@@ -1,5 +1,6 @@
-import React, { useCallback, useEffect, useState } from "react";
-import "./ReactSnakePage.modules.css";
+import React, { useCallback, useEffect } from "react";
+import "./ReactReduxSnakePage.modules.css";
+import { connect } from "react-redux";
 import { SnakeComponent } from "../../components/SnakeComponent/SnakeComponent";
 import { FoodComponent } from "../../components/FoodComponent/FoodComponent";
 import {
@@ -10,23 +11,83 @@ import {
   SPEED
 } from "../../constants/snakeConstants";
 import { DOWN, LEFT, RIGHT, UP } from "../../constants/directionConstants";
+import {
+  setDirection,
+  setSnake,
+  setLevel,
+  setScore,
+  setGameOver,
+  setTotalScore,
+  setIsGame,
+  setFood,
+} from "../../actions/actions";
+import { Snake, Food } from "../../types/types";
+import {RootState} from "../../reducers";
 
-function ReactSnakePage() {
-  const [direction, setDirection] = useState("right");
-  const [snake, setSnake] = useState(DEFAULT_SNAKE);
-  const [level, setLevel] = useState(1);
-  const [score, setScore] = useState(0);
-  const [gameOver, setGameOver] = useState(false);
-  const [totalScore, setTotalScore] = useState(0);
-  const [isGame, setIsGame] = useState(false);
-  const [food, setFood] = useState(DEFAULT_FOOD);
+interface ReactReduxSnakePageInterface {
+  snake: Snake[];
+  direction: string; // Replace with actual type of direction
+  level: number;
+  score: number;
+  gameOver: boolean;
+  totalScore: number;
+  isGame: boolean;
+  food: Food;
+  setDirection: typeof setDirection;
+  setSnake: typeof setSnake;
+  setLevel: typeof setLevel;
+  setScore: typeof setScore;
+  setGameOver: typeof setGameOver;
+  setTotalScore: typeof setTotalScore;
+  setIsGame: typeof setIsGame;
+  setFood: typeof setFood;
+}
 
-  const generateFood = () => {
+const ReactReduxSnakePage: React.FC<ReactReduxSnakePageInterface> = ({
+                                                snake,
+                                                direction,
+                                                level,
+                                                score,
+                                                gameOver,
+                                                totalScore,
+                                                isGame,
+                                                food,
+                                                setDirection,
+                                                setSnake,
+                                                setLevel,
+                                                setScore,
+                                                setGameOver,
+                                                setTotalScore,
+                                                setIsGame,
+                                                setFood,
+                                              }) => {
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        setIsGame(false);
+      } else {
+        setLevel(1);
+        setScore(0);
+        setGameOver(false);
+        setSnake(DEFAULT_SNAKE);
+        setFood(DEFAULT_FOOD);
+        setIsGame(true);
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [setLevel, setScore, setGameOver, setSnake, setFood, setIsGame]);
+
+  const generateFood = (): Food => {
     let x: number, y: number;
     do {
       x = Math.floor(Math.random() * BOARD_SIZE);
       y = Math.floor(Math.random() * BOARD_SIZE);
-    } while (snake.some((element) => element.x === x && element.y === y));
+    } while (snake.some((element: Snake) => element.x === x && element.y === y));
 
     return { x, y };
   };
@@ -65,7 +126,7 @@ function ReactSnakePage() {
       default:
         break;
     }
-  }, [direction]);
+  }, [direction, setDirection]);
 
   const snakeMoveHandler = useCallback(() => {
     const newSnake = [...snake];
@@ -93,12 +154,14 @@ function ReactSnakePage() {
       newSnake.pop();
     }
     setSnake(newSnake);
-  }, [snake, direction]);
+  }, [direction, snake, setSnake]);
 
   useEffect(() => {
-    const moveInterval = setInterval(snakeMoveHandler, SPEED - level * 50);
+    const moveInterval = setInterval(() => {
+      snakeMoveHandler();
+    }, SPEED - level * 50);
     return () => clearInterval(moveInterval);
-  }, [level, snakeMoveHandler]);
+  }, [snakeMoveHandler, level, setSnake]);
 
   useEffect(() => {
     document.addEventListener("keydown", pressKeyHandler);
@@ -108,9 +171,9 @@ function ReactSnakePage() {
   useEffect(() => {
     if (snake[0].x === food.x && snake[0].y === food.y) {
       setFood(generateFood());
-      setScore((prevScore) => prevScore + 1);
+      setScore(score + 1);
       if ((score + 1) % 5 === 0) {
-        setLevel((prevLevel) => prevLevel + 1);
+        setLevel(level + 1);
       }
       const newSnake = [...snake];
       const tail = { ...newSnake[newSnake.length - 1] };
@@ -118,7 +181,9 @@ function ReactSnakePage() {
       setSnake(newSnake);
     }
 
-    const hasCollision = snake.slice(1).some((segment) => segment.x === snake[0].x && segment.y === snake[0].y);
+    const hasCollision = snake
+    .slice(1)
+    .some((segment: Snake) => segment.x === snake[0].x && segment.y === snake[0].y);
     if (hasCollision) {
       setGameOver(true);
       if (totalScore < score) {
@@ -126,7 +191,19 @@ function ReactSnakePage() {
         setTotalScore(score);
       }
     }
-  }, [snake, food, generateFood, score, totalScore]);
+  }, [
+    snake,
+    food,
+    score,
+    totalScore,
+    setFood,
+    setScore,
+    setLevel,
+    setSnake,
+    setGameOver,
+    setTotalScore,
+    setIsGame,
+  ]);
 
   useEffect(() => {
     const newTotalScore = localStorage.getItem("reactTotalScore");
@@ -135,11 +212,18 @@ function ReactSnakePage() {
     } else {
       setTotalScore(Number(newTotalScore));
     }
-  }, []);
+  }, [setTotalScore]);
+
+  useEffect(() => {
+    return () => {
+      setIsGame(false);
+      setDirection(RIGHT);
+    };
+  }, [setIsGame, setDirection]);
 
   return (
       <div className="game">
-        <h1>React snake</h1>
+        <h1>ReactRedux snake</h1>
         <section>
           <p>Level: {level}</p>
           <p>Score: {score}</p>
@@ -152,7 +236,7 @@ function ReactSnakePage() {
             </div>
         ) : (
             <div className="gameBoard">
-              {!gameOver ? (
+              {food && !gameOver ? (
                   <FoodComponent x={food.x} y={food.y} />
               ) : (
                   <div className="gameOverBoard">
@@ -166,7 +250,7 @@ function ReactSnakePage() {
                   <div className="item" key={i}>
                     {!gameOver &&
                         snake.some(
-                            (element) =>
+                            (element: Snake) =>
                                 element.x === i % BOARD_SIZE &&
                                 element.y === Math.floor(i / BOARD_SIZE)
                         ) && <SnakeComponent />}
@@ -176,6 +260,28 @@ function ReactSnakePage() {
         )}
       </div>
   );
-}
+};
 
-export default ReactSnakePage;
+const mapStateToProps = (state: RootState) => ({
+  snake: state.snake.snake.snake,
+  direction: state.snake.snake.direction,
+  level: state.snake.snake.level,
+  score: state.snake.snake.score,
+  gameOver: state.snake.snake.gameOver,
+  totalScore: state.snake.snake.totalScore,
+  isGame: state.snake.snake.isGame,
+  food: state.snake.snake.food,
+});
+
+const mapDispatchToProps = {
+  setDirection,
+  setSnake,
+  setLevel,
+  setScore,
+  setGameOver,
+  setTotalScore,
+  setIsGame,
+  setFood,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ReactReduxSnakePage);

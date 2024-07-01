@@ -1,16 +1,5 @@
-import { BOARD_SIZE, DEFAULT_SNAKE } from "../constants/snakeConstants";
+import {DEFAULT_FOOD, DEFAULT_SNAKE} from "../constants/snakeConstants";
 import {RIGHT} from "../constants/directionConstants";
-
-const generateFood = () => {
-  let x: number;
-  let y: number;
-  do {
-    x = Math.floor(Math.random() * BOARD_SIZE);
-    y = Math.floor(Math.random() * BOARD_SIZE);
-  } while (DEFAULT_SNAKE.some(element => element.x === x && element.y === y));
-
-  return { x, y };
-};
 
 const initialState = {
   direction: RIGHT,
@@ -19,7 +8,7 @@ const initialState = {
   score: 0,
   gameOver: false,
   totalScore: 0,
-  food: generateFood(),
+  food: DEFAULT_FOOD,
   isGame: false,
 };
 

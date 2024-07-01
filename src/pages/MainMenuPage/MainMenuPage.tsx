@@ -14,12 +14,17 @@ function MainMenuPage() {
     navigate(APP_PAGES.ReactSnake);
   };
 
+  const navigateToReactReduxSnake = () => {
+    navigate(APP_PAGES.ReactSnake);
+  };
+
   return (
       <div className='page'>
         <h1>Main Menu</h1>
         <div className='button-container'>
           <button onClick={navigateToReactSnake} className='button'>React Snake</button>
           <button onClick={navigateToReduxSnake} className='button'>Redux Snake</button>
+          <button onClick={navigateToReactReduxSnake} className='button'>Redux Snake</button>
         </div>
       </div>
   );
