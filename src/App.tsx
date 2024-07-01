@@ -7,6 +7,7 @@ import ReduxSnakePage from "./pages/ReduxSnakePage/ReduxSnakePage";
 import {APP_PAGES} from "./constants/routingConstants";
 import {Layout} from "./components/Layout/Layout";
 import {NotFoundPage} from "./pages/NotFoundPage/NotFoundPage";
+import ReactReduxSnakePage from "./pages/ReactReduxPage/ReactReduxSnakePage";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
             <Route index element={<MainMenuPage />} />
             <Route path={APP_PAGES.ReactSnake} element={<ReactSnakePage />} />
             <Route path={APP_PAGES.ReduxSnake} element={<ReduxSnakePage />} />
+            <Route path={APP_PAGES.ReactReduxSnake} element={<ReactReduxSnakePage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>

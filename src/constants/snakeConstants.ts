@@ -5,6 +5,11 @@ export const DEFAULT_SNAKE = [
     { x: 2, y: 0 }
 ];
 
+export const DEFAULT_FOOD = {
+    x: 5,
+    y: 5
+}
+
 export const AVAILABLE_MOVES = ['ArrowUp', 'ArrowDown', 'ArrowRight', 'ArrowLeft'];
 
 export const SPEED = 500;

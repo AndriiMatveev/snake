@@ -1,14 +1,14 @@
 # Snake Game
 
-This project implements the classic Snake game using React and Redux.
+This project implements the classic Snake game using React, Redux, and React-Redux.
 
 ## Description
 
-The Snake Game project includes two versions: one using local React state management and another using centralized Redux state management.
+The Snake Game project includes three versions: one using local React state management, another using centralized Redux state management, and a third using React-Redux for combined functionality.
 
 ### ReactSnakePage
 
-The React version of the Snake game using local state management.
+The React version of the Snake game uses local state management.
 
 #### Features
 
@@ -19,15 +19,30 @@ The React version of the Snake game using local state management.
 
 ### ReduxSnakePage
 
-The Redux version of the Snake game using centralized state management.
+The Redux version of the Snake game uses centralized state management with Redux.
 
 #### Features
 
-- Centralized state management using Redux.
-- State (snake direction, position, score, game over status) stored in global Redux store.
-- Actions (`setDirection`, `setSnake`, `setScore`, etc.) dispatched to update state.
+- Centralized state management using Redux.- Game logic and state managed locally within the component.
+- State (snake direction, position, score, game over status) stored in the global Redux store.
+- Actions (setDirection, setSnake, setScore, etc.) dispatched to update state.
 - Improved predictability and scalability through centralized state management.
 - Total score stored and retrieved from local storage.
+
+### ReactReduxSnakePage
+
+The React-Redux version of the Snake game combines React and Redux for state management.
+
+#### Features
+
+- State management using both React and Redux principles.
+- State (snake direction, position, score, game over status) managed through Redux.
+- Actions dispatched to update state, providing a scalable and predictable approach.
+- Utilizes React components connected to the Redux store (connect from react-redux).
+
+### Routing
+
+The application uses React Router (react-router-dom) for routing between different game versions and pages.
 
 ## Getting Started
 
@@ -35,12 +50,14 @@ The Redux version of the Snake game using centralized state management.
 
 To get started with the project locally, follow these steps:
 
-1. Install dependencies: 
+1. Clone the repository.
+
+2. Install dependencies: 
 ```bash
    npm install 
 ``` 
 
-2. Run the application: 
+3. Run the application: 
 ```bash
    npm start 
 ``` 
