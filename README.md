@@ -1,33 +1,21 @@
 # Snake Game
 
-This project implements the classic Snake game using React, Redux, and React-Redux.
+This project implements the classic Snake game using React and React-Redux.
 
 ## Description
 
-The Snake Game project includes three versions: one using local React state management, another using centralized Redux state management, and a third using React-Redux for combined functionality.
+The Snake Game project includes two versions: one using React Сontext and Context.Provider for state management and another using React-Redux for combined functionality.
 
 ### ReactSnakePage
 
-The React version of the Snake game uses local state management.
+The React version of the Snake game uses lReact Сontext and Context.Provider for state management.
 
 #### Features
 
 - State management (snake direction, position, score, game over status) handled using React hooks (`useState`, `useEffect`, `useCallback`).
-- Game logic and state managed locally within the component.
+- Game logic and state managed within the component via React Context (SnakeGameProvider).
 - Basic keyboard event handling for snake direction control.
 - Utilizes local storage to persist and display total score across game sessions.
-
-### ReduxSnakePage
-
-The Redux version of the Snake game uses centralized state management with Redux.
-
-#### Features
-
-- Centralized state management using Redux.- Game logic and state managed locally within the component.
-- State (snake direction, position, score, game over status) stored in the global Redux store.
-- Actions (setDirection, setSnake, setScore, etc.) dispatched to update state.
-- Improved predictability and scalability through centralized state management.
-- Total score stored and retrieved from local storage.
 
 ### ReactReduxSnakePage
 

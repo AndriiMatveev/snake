@@ -1,7 +1,6 @@
 export const APP_PAGES = {
   MainMenu: '/',
   ReactSnake: '/react-snake',
-  ReduxSnake: '/redux-snake',
   ReactReduxSnake: '/react-redux-snake'
 } as const;
 

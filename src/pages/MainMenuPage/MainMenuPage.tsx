@@ -6,10 +6,6 @@ import './MainMenuPage.modules.css';
 function MainMenuPage() {
   const navigate = useNavigate();
 
-  const navigateToReduxSnake = () => {
-    navigate(APP_PAGES.ReduxSnake);
-  };
-
   const navigateToReactSnake = () => {
     navigate(APP_PAGES.ReactSnake);
   };
@@ -23,8 +19,7 @@ function MainMenuPage() {
         <h1>Main Menu</h1>
         <div className='button-container'>
           <button onClick={navigateToReactSnake} className='button'>React Snake</button>
-          <button onClick={navigateToReduxSnake} className='button'>Redux Snake</button>
-          <button onClick={navigateToReactReduxSnake} className='button'>Redux Snake</button>
+          <button onClick={navigateToReactReduxSnake} className='button'>ReactRedux Snake</button>
         </div>
       </div>
   );
