@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import "./ReactSnakePage.modules.css";
 import { SnakeComponent } from "../../components/SnakeComponent/SnakeComponent";
 import { FoodComponent } from "../../components/FoodComponent/FoodComponent";
@@ -10,26 +10,28 @@ import {
   SPEED
 } from "../../constants/snakeConstants";
 import { DOWN, LEFT, RIGHT, UP } from "../../constants/directionConstants";
+import { SnakeGameProvider, useSnakeGame } from "../../context/SnakeGameProvider";
 
 function ReactSnakePage() {
-  const [direction, setDirection] = useState("right");
-  const [snake, setSnake] = useState(DEFAULT_SNAKE);
-  const [level, setLevel] = useState(1);
-  const [score, setScore] = useState(0);
-  const [gameOver, setGameOver] = useState(false);
-  const [totalScore, setTotalScore] = useState(0);
-  const [isGame, setIsGame] = useState(false);
-  const [food, setFood] = useState(DEFAULT_FOOD);
+  const {
+    direction, setDirection,
+    snake, setSnake,
+    level, setLevel,
+    score, setScore,
+    gameOver, setGameOver,
+    totalScore, setTotalScore,
+    isGame, setIsGame,
+    food, setFood
+  } = useSnakeGame();
 
-  const generateFood = () => {
+  const generateFood = useCallback(() => {
     let x: number, y: number;
     do {
       x = Math.floor(Math.random() * BOARD_SIZE);
       y = Math.floor(Math.random() * BOARD_SIZE);
     } while (snake.some((element) => element.x === x && element.y === y));
-
     return { x, y };
-  };
+  }, [snake]);
 
   const startGameHandler = () => {
     setLevel(1);
@@ -43,29 +45,21 @@ function ReactSnakePage() {
   const pressKeyHandler = useCallback((e: KeyboardEvent) => {
     switch (e.key) {
       case AVAILABLE_MOVES[0]:
-        if (direction !== DOWN) {
-          setDirection(UP);
-        }
+        if (direction !== DOWN) setDirection(UP);
         break;
       case AVAILABLE_MOVES[1]:
-        if (direction !== UP) {
-          setDirection(DOWN);
-        }
+        if (direction !== UP) setDirection(DOWN);
         break;
       case AVAILABLE_MOVES[2]:
-        if (direction !== LEFT) {
-          setDirection(RIGHT);
-        }
+        if (direction !== LEFT) setDirection(RIGHT);
         break;
       case AVAILABLE_MOVES[3]:
-        if (direction !== RIGHT) {
-          setDirection(LEFT);
-        }
+        if (direction !== RIGHT) setDirection(LEFT);
         break;
       default:
         break;
     }
-  }, [direction]);
+  }, [direction, setDirection]);
 
   const snakeMoveHandler = useCallback(() => {
     const newSnake = [...snake];
@@ -93,7 +87,7 @@ function ReactSnakePage() {
       newSnake.pop();
     }
     setSnake(newSnake);
-  }, [snake, direction]);
+  }, [snake, direction, setSnake]);
 
   useEffect(() => {
     const moveInterval = setInterval(snakeMoveHandler, SPEED - level * 50);
@@ -108,9 +102,9 @@ function ReactSnakePage() {
   useEffect(() => {
     if (snake[0].x === food.x && snake[0].y === food.y) {
       setFood(generateFood());
-      setScore((prevScore) => prevScore + 1);
+      setScore(prevScore => prevScore + 1);
       if ((score + 1) % 5 === 0) {
-        setLevel((prevLevel) => prevLevel + 1);
+        setLevel(prevLevel => prevLevel + 1);
       }
       const newSnake = [...snake];
       const tail = { ...newSnake[newSnake.length - 1] };
@@ -118,7 +112,7 @@ function ReactSnakePage() {
       setSnake(newSnake);
     }
 
-    const hasCollision = snake.slice(1).some((segment) => segment.x === snake[0].x && segment.y === snake[0].y);
+    const hasCollision = snake.slice(1).some(segment => segment.x === snake[0].x && segment.y === snake[0].y);
     if (hasCollision) {
       setGameOver(true);
       if (totalScore < score) {
@@ -126,7 +120,7 @@ function ReactSnakePage() {
         setTotalScore(score);
       }
     }
-  }, [snake, food, generateFood, score, totalScore]);
+  }, [snake, food, generateFood, score, totalScore, setFood, setScore, setLevel, setSnake, setGameOver, setTotalScore]);
 
   useEffect(() => {
     const newTotalScore = localStorage.getItem("reactTotalScore");
@@ -135,7 +129,21 @@ function ReactSnakePage() {
     } else {
       setTotalScore(Number(newTotalScore));
     }
-  }, []);
+  }, [setTotalScore]);
+
+  const renderBoardItems = useCallback(() => {
+    return Array.from({ length: BOARD_SIZE * BOARD_SIZE }, (_, i) => {
+      const x = i % BOARD_SIZE;
+      const y = Math.floor(i / BOARD_SIZE);
+      const isSnake = snake.some(element => element.x === x && element.y === y);
+
+      return (
+          <div className="item" key={i}>
+            {!gameOver && isSnake && <SnakeComponent />}
+          </div>
+      );
+    });
+  }, [snake, gameOver]);
 
   return (
       <div className="game">
@@ -162,20 +170,17 @@ function ReactSnakePage() {
                     <p>Total Score: {totalScore}</p>
                   </div>
               )}
-              {Array.from({ length: BOARD_SIZE * BOARD_SIZE }, (_, i) => (
-                  <div className="item" key={i}>
-                    {!gameOver &&
-                        snake.some(
-                            (element) =>
-                                element.x === i % BOARD_SIZE &&
-                                element.y === Math.floor(i / BOARD_SIZE)
-                        ) && <SnakeComponent />}
-                  </div>
-              ))}
+              {renderBoardItems()}
             </div>
         )}
       </div>
   );
 }
 
-export default ReactSnakePage;
+const WrappedReactSnakePage = () => (
+    <SnakeGameProvider>
+      <ReactSnakePage />
+    </SnakeGameProvider>
+);
+
+export default WrappedReactSnakePage;
